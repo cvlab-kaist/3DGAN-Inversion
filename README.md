@@ -1,4 +1,5 @@
 # 3D GAN Inversion with Pose Optimization     (WACV 2023)
+Jaehoon Ko, Kyusun Cho, Daewon Choi, Kwangrok Ryoo, Seungryong Kim
 
 <a href="https://arxiv.org/abs/2210.07301"><img src="https://img.shields.io/badge/arXiv-2210.07301-b31b1b.svg"></a>
 
