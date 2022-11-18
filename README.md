@@ -9,7 +9,7 @@ Inference Notebook: <a href="https://colab.research.google.com/drive/1HY8g_HR26Y
 ![overview](docs/chris_hemsworth_inv.gif)
 
 ## Description   
-Official Implementation of our WACV 2023 paper "3D GAN Inversion with Pose Optimization".
+Official Implementation of our WACV 2023 paper "3D GAN Inversion with Pose Optimization" by Jaehoon Ko, Kyusun Cho, Daewon Choi, Kwangrok Ryoo and Seungryong Kim.
 
 
 
