@@ -1,5 +1,5 @@
 # 3D GAN Inversion with Pose Optimization     (WACV 2023)
-Jaehoon Ko, Kyusun Cho, Daewon Choi, Kwangrok Ryoo, Seungryong Kim
+Jaehoon Ko*, Kyusun Cho*, Daewon Choi, Kwangrok Ryoo, Seungryong Kim
 
 <a href="https://arxiv.org/abs/2210.07301"><img src="https://img.shields.io/badge/arXiv-2210.07301-b31b1b.svg"></a>
 
@@ -11,6 +11,7 @@ Inference Notebook: <a href="https://colab.research.google.com/drive/1HY8g_HR26Y
 ## Description   
 Official Implementation of our WACV 2023 paper "3D GAN Inversion with Pose Optimization" by Jaehoon Ko, Kyusun Cho, Daewon Choi, Kwangrok Ryoo and Seungryong Kim.
 
+This is an early release of our implementation, and is currently unfinished with several bugs and disordered organization. We shall update this repository with finalalized codes and trained models in a few weeks time. 
 
 
 ## Getting Started
