@@ -1,0 +1,10 @@
+pretrained_models/
+input/
+output/
+checkpoints/
+__pycache__/
+embeddings/
+initializer/
+editings/
+
+*.pt
