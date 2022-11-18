@@ -3,7 +3,7 @@
 <a href="https://arxiv.org/abs/2210.07301"><img src="https://img.shields.io/badge/arXiv-2210.07301-b31b1b.svg"></a>
 
 Inference Notebook: <a href="https://colab.research.google.com/drive/1HY8g_HR26YHsYmzrjC6K3gIaIK09bWD7?usp=sharing"><img src="https://colab.research.google.com/assets/colab-badge.svg" height=20></a>  
- ## [[Project Page]](https://nerfies.github.io)
+ ## [[Project Page]](https://3dgan-inversion.github.io./)
 
 ![overview](docs/chris_hemsworth_inv.gif)
 
