@@ -16,7 +16,6 @@ from tqdm import tqdm
 from configs import paths_config, hyperparameters, global_config
 
 from training.projectors import w_projector
-from utils.log_utils import log_images_from_w
 from torchvision.utils import save_image
 import PIL
 import numpy as np

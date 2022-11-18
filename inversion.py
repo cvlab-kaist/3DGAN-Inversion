@@ -10,7 +10,7 @@ from training.coaches.coach import Coach
 from utils.ImagesDataset import ImagesDataset
 
 
-def run_PTI(run_name='', use_wandb=False, use_multi_id_training=False):
+def run_PTI(run_name=''):
     # os.environ['CUDA_DEVICE_ORDER'] = 'PCI_BUS_ID'
     os.environ['CUDA_VISIBLE_DEVICES'] = paths_config.using_GPU
 
@@ -39,4 +39,4 @@ def run_PTI(run_name='', use_wandb=False, use_multi_id_training=False):
 
 
 if __name__ == '__main__':
-    run_PTI(run_name='', use_wandb=False, use_multi_id_training=False)
+    run_PTI(run_name='')
