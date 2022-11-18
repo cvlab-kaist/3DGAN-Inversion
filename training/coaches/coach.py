@@ -31,7 +31,6 @@ from pytorch_msssim import ms_ssim
 from lpips import LPIPS
 
 from criteria.localitly_regulizer import Space_Regulizer
-from utils.log_utils import log_image_from_w
 from utils.models_utils import toogle_grad, load_old_G
 from utils.grid_view import look_at
 from training.projectors import w_projector

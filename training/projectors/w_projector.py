@@ -14,7 +14,6 @@ import torch
 import torch.nn.functional as F
 from tqdm import tqdm
 from configs import global_config, hyperparameters
-from utils import log_utils
 import dnnlib
 import math
 import PIL
