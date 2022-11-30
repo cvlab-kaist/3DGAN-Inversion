@@ -1,4 +1,8 @@
 # 3D GAN Inversion with Pose Optimization
+<a href="https://arxiv.org/abs/2210.07301"><img src="https://img.shields.io/badge/arXiv-2210.07301-b31b1b.svg"></a>
+
+<!-- Inference Notebook: <a href="https://colab.research.google.com/drive/1HY8g_HR26YHsYmzrjC6K3gIaIK09bWD7?usp=sharing"><img src="https://colab.research.google.com/assets/colab-badge.svg" height=20></a>   -->
+ <!-- ## [[Project Page]](https://3dgan-inversion.github.io./) -->
 ### Official PyTorch implementation of the WACV 2023 paper
 
 ![1](https://user-images.githubusercontent.com/78152231/204740257-1996faa1-11ff-4710-8224-1cf340be7d29.png)
@@ -67,6 +71,27 @@ python scripts/run_pti.py
 ```
 
 You can edit the input & output directories, or GPU number on configs/paths_config.py
+
+
+# Credits
+
+**StyleCLIP model and implementation:**   
+https://github.com/NVlabs/eg3d
+Copyright (c) 2021-2022, NVIDIA Corporation & affiliates. 
+License (NVIDIA) https://github.com/NVlabs/eg3d/blob/main/LICENSE.txt
+
+**PTI implementation:**   
+https://github.com/danielroich/PTI
+Copyright (c) 2021 Daniel Roich  
+License (MIT) https://github.com/danielroich/PTI/blob/main/LICENSE
+
+**GANSPACE implementation:**   
+https://github.com/harskish/ganspace
+Copyright (c) 2020 harkish  
+License (Apache License 2.0) https://github.com/harskish/ganspace/blob/master/LICENSE
+
+
+
 
 # Acknowledgement
 This code implementation is heavily borrowed from the official implementation of [EG3D](https://github.com/NVlabs/eg3d) and [PTI](https://github.com/danielroich/PTI). We really appreciate for all the projects.
