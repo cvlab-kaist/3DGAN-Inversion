@@ -25,7 +25,7 @@ import mrcfile
 
 import legacy
 
-from camera_utils import LookAtPoseSampler
+from utils.camera_utils import LookAtPoseSampler
 from torch_utils import misc
 #----------------------------------------------------------------------------
 
@@ -71,34 +71,18 @@ def create_samples(N=256, voxel_origin=[0, 0, 0], cube_length=2.0):
 
 #----------------------------------------------------------------------------
 
-def gen_interp_video(G, mp4: str, seeds, shuffle_seed=None, w_frames=60*4, kind='cubic', grid_dims=(1,1), num_keyframes=None, wraps=2, psi=1, truncation_cutoff=14, cfg='FFHQ', image_mode='image', gen_shapes=False, device=torch.device('cuda'), **video_kwargs):
+def gen_interp_video(G, ws, mp4: str, seeds=None, shuffle_seed=None, w_frames=60*4, kind='cubic', grid_dims=(1,1), num_keyframes=None, wraps=2, psi=1, truncation_cutoff=14, cfg='FFHQ', image_mode='image', gen_shapes=False, device=torch.device('cuda'), **video_kwargs):
     grid_w = grid_dims[0]
     grid_h = grid_dims[1]
-
-    if num_keyframes is None:
-        if len(seeds) % (grid_w*grid_h) != 0:
-            raise ValueError('Number of input seeds must be divisible by grid W*H')
-        num_keyframes = len(seeds) // (grid_w*grid_h)
-
-    all_seeds = np.zeros(num_keyframes*grid_h*grid_w, dtype=np.int64)
-    for idx in range(num_keyframes*grid_h*grid_w):
-        all_seeds[idx] = seeds[idx % len(seeds)]
-
-    if shuffle_seed is not None:
-        rng = np.random.RandomState(seed=shuffle_seed)
-        rng.shuffle(all_seeds)
-
-    camera_lookat_point = torch.tensor([0, 0, 0.2], device=device) if cfg == 'FFHQ' else torch.tensor([0, 0, 0], device=device)
-
-    zs = torch.from_numpy(np.stack([np.random.RandomState(seed).randn(G.z_dim) for seed in all_seeds])).to(device)
+    num_keyframes = 1
+    camera_lookat_point = torch.tensor([0, 0, 0], device=device)
     cam2world_pose = LookAtPoseSampler.sample(3.14/2, 3.14/2, camera_lookat_point, radius=2.7, device=device)
     intrinsics = torch.tensor([[4.2647, 0, 0.5], [0, 4.2647, 0.5], [0, 0, 1]], device=device)
     c = torch.cat([cam2world_pose.reshape(-1, 16), intrinsics.reshape(-1, 9)], 1)
-    c = c.repeat(len(zs), 1)
-    ws = G.mapping(z=zs, c=c, truncation_psi=psi, truncation_cutoff=truncation_cutoff)
+    c = c.repeat(500, 1)
     _ = G.synthesis(ws[:1], c[:1]) # warm up
-    ws = ws.reshape(grid_h, grid_w, num_keyframes, *ws.shape[1:])
-
+    ws = ws.reshape(grid_h, grid_w, *ws.shape[1:]).unsqueeze(2).repeat(1,1,num_keyframes,1,1)
+    
     # Interpolation.
     grid = []
     for yi in range(grid_h):
@@ -114,10 +98,7 @@ def gen_interp_video(G, mp4: str, seeds, shuffle_seed=None, w_frames=60*4, kind=
     max_batch = 10000000
     voxel_resolution = 512
     video_out = imageio.get_writer(mp4, mode='I', fps=60, codec='libx264', **video_kwargs)
-
-    if gen_shapes:
-        outdir = 'interpolation_{}_{}/'.format(all_seeds[0], all_seeds[1])
-        os.makedirs(outdir, exist_ok=True)
+    outdir = './'
     all_poses = []
     for frame_idx in tqdm(range(num_keyframes * w_frames)):
         imgs = []

@@ -20,7 +20,7 @@ import dnnlib
 from torch_utils.ops import upfirdn2d
 import legacy # pylint: disable=import-error
 
-from camera_utils import LookAtPoseSampler
+from utils.camera_utils import LookAtPoseSampler
 
 
 

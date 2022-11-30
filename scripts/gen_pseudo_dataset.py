@@ -13,6 +13,8 @@
 import os
 import re
 from typing import List, Optional, Tuple, Union
+import sys
+sys.path.append('/home/cvlab02/project/jaehoon/PTI_repo/Final')
 
 import click
 import dnnlib
@@ -20,14 +22,13 @@ import numpy as np
 import PIL.Image
 import torch
 from tqdm import tqdm
-import mrcfile
+import math
 
 
 import legacy
-from utils.camera_utils import LookAtPoseSampler, FOV_to_intrinsics
+from utils.camera_utils import LookAtPoseSampler, LookAt3DPoseSampler, FOV_to_intrinsics
 from torch_utils import misc
 from training.triplane import TriPlaneGenerator
-
 
 #----------------------------------------------------------------------------
 
@@ -107,25 +108,29 @@ def create_samples(N=256, voxel_origin=[0, 0, 0], cube_length=2.0):
 @click.option('--seeds', type=parse_range, help='List of random seeds (e.g., \'0,1,4-6\')', required=True)
 @click.option('--trunc', 'truncation_psi', type=float, help='Truncation psi', default=1, show_default=True)
 @click.option('--trunc-cutoff', 'truncation_cutoff', type=int, help='Truncation cutoff', default=14, show_default=True)
-@click.option('--class', 'class_idx', type=int, help='Class label (unconditional if not specified)')
 @click.option('--outdir', help='Where to save the output images', type=str, required=True, metavar='DIR')
-@click.option('--shapes', help='Export shapes as .mrc files viewable in ChimeraX', type=bool, required=False, metavar='BOOL', default=False, show_default=True)
-@click.option('--shape-res', help='', type=int, required=False, metavar='int', default=512, show_default=True)
+@click.option('--fov-deg', help='Max ', type=int, required=False, metavar='float', default=18.837, show_default=True)
+@click.option('--fov-deg', help='Field of View of camera in degrees', type=int, required=False, metavar='float', default=18.837, show_default=True)
 @click.option('--fov-deg', help='Field of View of camera in degrees', type=int, required=False, metavar='float', default=18.837, show_default=True)
 @click.option('--shape-format', help='Shape Format', type=click.Choice(['.mrc', '.ply']), default='.mrc')
 @click.option('--reload_modules', help='Overload persistent modules?', type=bool, required=False, metavar='BOOL', default=False, show_default=True)
+@click.option('--use_roll', help='Use additional roll angle?', type=bool, required=False, default=False, show_default=True)
+@click.option('--max_yaw', help='Max angles for yaw', type=float, required=False, default=0.2, show_default=True)
+@click.option('--max_pitch', help='Max angles for pitch', type=float, required=False, default=0.1, show_default=True)
+@click.option('--max_roll', help='Max angles for roll', type=float, required=False, default=0.2, show_default=True)
 def generate_images(
     network_pkl: str,
     seeds: List[int],
     truncation_psi: float,
     truncation_cutoff: int,
     outdir: str,
-    shapes: bool,
-    shape_res: int,
     fov_deg: float,
     shape_format: str,
-    class_idx: Optional[int],
     reload_modules: bool,
+    use_roll: bool, 
+    max_yaw: float,
+    max_pitch: float,
+    max_roll: float,
 ):
     """Generate images using pretrained network pickle.
 
@@ -133,8 +138,8 @@ def generate_images(
 
     \b
     # Generate an image using pre-trained FFHQ model.
-    python gen_samples.py --outdir=output --trunc=0.7 --seeds=0-5 --shapes=True\\
-        --network=ffhq-rebalanced-128.pkl
+    python gen_samples.py --outdir=afhq_pseudo --trunc=0.7 --seeds=0-9999\\
+        --network=./afhqcats512-128.pkl
     """
 
     print('Loading networks from "%s"...' % network_pkl)
@@ -153,75 +158,46 @@ def generate_images(
 
     os.makedirs(outdir, exist_ok=True)
 
-    cam2world_pose = LookAtPoseSampler.sample(3.14/2, 3.14/2, torch.tensor([0, 0, 0.2], device=device), radius=2.7, device=device)
+    cam2world_pose = LookAtPoseSampler.sample(3.14/2, 3.14/2, torch.tensor([0, 0, 0], device=device), radius=2.7, device=device)
     intrinsics = FOV_to_intrinsics(fov_deg, device=device)
-
+    pseudo_cam_gt = []
     # Generate images.
     for seed_idx, seed in enumerate(seeds):
         print('Generating image for seed %d (%d/%d) ...' % (seed, seed_idx, len(seeds)))
         z = torch.from_numpy(np.random.RandomState(seed).randn(1, G.z_dim)).to(device)
 
-        imgs = []
-        angle_p = -0.2
-        for angle_y, angle_p in [(.4, angle_p), (0, angle_p), (-.4, angle_p)]:
-            cam_pivot = torch.tensor(G.rendering_kwargs.get('avg_camera_pivot', [0, 0, 0]), device=device)
-            cam_radius = G.rendering_kwargs.get('avg_camera_radius', 2.7)
-            cam2world_pose = LookAtPoseSampler.sample(np.pi/2 + angle_y, np.pi/2 + angle_p, cam_pivot, radius=cam_radius, device=device)
-            conditioning_cam2world_pose = LookAtPoseSampler.sample(np.pi/2, np.pi/2, cam_pivot, radius=cam_radius, device=device)
-            camera_params = torch.cat([cam2world_pose.reshape(-1, 16), intrinsics.reshape(-1, 9)], 1)
-            conditioning_params = torch.cat([conditioning_cam2world_pose.reshape(-1, 16), intrinsics.reshape(-1, 9)], 1)
+        angle_y = (torch.rand(1).item()-0.5) * math.pi*max_yaw
+        angle_p = (torch.rand(1).item()-0.5) * math.pi*max_pitch
+        angle_r = (torch.rand(1).cuda()-0.5) * math.pi*max_roll
 
-            ws = G.mapping(z, conditioning_params, truncation_psi=truncation_psi, truncation_cutoff=truncation_cutoff)
-            img = G.synthesis(ws, camera_params)['image']
+        cam_pivot = torch.tensor(G.rendering_kwargs.get('avg_camera_pivot', [0, 0, 0]), device=device)
+        cam_radius = G.rendering_kwargs.get('avg_camera_radius', 2.7)
 
-            img = (img.permute(0, 2, 3, 1) * 127.5 + 128).clamp(0, 255).to(torch.uint8)
-            imgs.append(img)
+        cam2world_pose = LookAt3DPoseSampler.sample(np.pi/2 + angle_y, np.pi/2 + angle_p, angle_r, cam_pivot, radius=cam_radius, device=device, use_roll=use_roll)
+        conditioning_cam2world_pose = LookAtPoseSampler.sample(np.pi/2, np.pi/2, cam_pivot, radius=cam_radius, device=device)
+        camera_params = torch.cat([cam2world_pose.reshape(-1, 16), intrinsics.reshape(-1, 9)], 1)
+        conditioning_params = torch.cat([conditioning_cam2world_pose.reshape(-1, 16), intrinsics.reshape(-1, 9)], 1)
+        pseudo_cam_gt.append(cam2world_pose.reshape(-1, 16).squeeze(0))
 
-        img = torch.cat(imgs, dim=2)
+        ws = G.mapping(z, conditioning_params, truncation_psi=truncation_psi, truncation_cutoff=truncation_cutoff)
+        img = G.synthesis(ws, camera_params)['image'][0]
+        img = (img.permute(1, 2, 0) * 127.5 + 128).clamp(0, 255).to(torch.uint8)
+        PIL.Image.fromarray(img.cpu().numpy(), 'RGB').save(f'{outdir}/seed{seed:04d}.png')
 
-        PIL.Image.fromarray(img[0].cpu().numpy(), 'RGB').save(f'{outdir}/seed{seed:04d}.png')
-
-        if shapes:
-            # extract a shape.mrc with marching cubes. You can view the .mrc file using ChimeraX from UCSF.
-            max_batch=1000000
-
-            samples, voxel_origin, voxel_size = create_samples(N=shape_res, voxel_origin=[0, 0, 0], cube_length=G.rendering_kwargs['box_warp'] * 1)#.reshape(1, -1, 3)
-            samples = samples.to(z.device)
-            sigmas = torch.zeros((samples.shape[0], samples.shape[1], 1), device=z.device)
-            transformed_ray_directions_expanded = torch.zeros((samples.shape[0], max_batch, 3), device=z.device)
-            transformed_ray_directions_expanded[..., -1] = -1
-
-            head = 0
-            with tqdm(total = samples.shape[1]) as pbar:
-                with torch.no_grad():
-                    while head < samples.shape[1]:
-                        torch.manual_seed(0)
-                        sigma = G.sample(samples[:, head:head+max_batch], transformed_ray_directions_expanded[:, :samples.shape[1]-head], z, conditioning_params, truncation_psi=truncation_psi, truncation_cutoff=truncation_cutoff, noise_mode='const')['sigma']
-                        sigmas[:, head:head+max_batch] = sigma
-                        head += max_batch
-                        pbar.update(max_batch)
-
-            sigmas = sigmas.reshape((shape_res, shape_res, shape_res)).cpu().numpy()
-            sigmas = np.flip(sigmas, 0)
-
-            # Trim the border of the extracted cube
-            pad = int(30 * shape_res / 256)
-            pad_value = -1000
-            sigmas[:pad] = pad_value
-            sigmas[-pad:] = pad_value
-            sigmas[:, :pad] = pad_value
-            sigmas[:, -pad:] = pad_value
-            sigmas[:, :, :pad] = pad_value
-            sigmas[:, :, -pad:] = pad_value
-
-            if shape_format == '.ply':
-                from shape_utils import convert_sdf_samples_to_ply
-                convert_sdf_samples_to_ply(np.transpose(sigmas, (2, 1, 0)), [0, 0, 0], 1, os.path.join(outdir, f'seed{seed:04d}.ply'), level=10)
-            elif shape_format == '.mrc': # output mrc
-                with mrcfile.new_mmap(os.path.join(outdir, f'seed{seed:04d}.mrc'), overwrite=True, shape=sigmas.shape, mrc_mode=2) as mrc:
-                    mrc.data[:] = sigmas
-
-
+    with open(os.path.join(outdir, 'pseudo_cam_gt.txt'), 'w') as f:
+        seed = 0
+        for i in pseudo_cam_gt:
+            f.write(f'seed{seed:05d}' + ': ')
+            count=0
+            for j in i:
+                count+=1
+                if count==16:
+                    f.write(str(j.item()) + ' ')
+                    f.write('\n')
+                else:
+                    f.write(str(j.item()) + ' ')
+            seed +=1
+        print('label saved.')
 #----------------------------------------------------------------------------
 
 if __name__ == "__main__":

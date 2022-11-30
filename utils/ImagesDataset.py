@@ -18,7 +18,6 @@ class ImagesDataset(Dataset):
     def __getitem__(self, index):
         fname, from_path = self.source_paths[index]
         from_im = Image.open(from_path).convert('RGB')
-        #import pdb; pdb.set_trace()
 
         if self.source_transform:
             from_im = self.source_transform(from_im)

@@ -27,7 +27,7 @@ from torch_utils.ops import grid_sample_gradfix
 
 import legacy
 from metrics import metric_main
-from camera_utils import LookAtPoseSampler
+from utils.camera_utils import LookAtPoseSampler
 from training.crosssection_utils import sample_cross_section
 
 #----------------------------------------------------------------------------

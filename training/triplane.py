@@ -64,7 +64,6 @@ class TriPlaneGenerator(torch.nn.Module):
 
         # Create triplanes by running StyleGAN backbone
         N, M, _ = ray_origins.shape
-        #import pdb; pdb.set_trace()
         if use_cached_backbone and self._last_planes is not None:
             planes = self._last_planes
         else:

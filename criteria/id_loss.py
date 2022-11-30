@@ -1,6 +1,7 @@
 import torch
 from torch import nn
 from models.encoders.model_irse import Backbone
+from configs import paths_config
 
 
 class IDLoss(nn.Module):
@@ -8,7 +9,7 @@ class IDLoss(nn.Module):
         super(IDLoss, self).__init__()
         print('Loading ResNet ArcFace')
         self.facenet = Backbone(input_size=112, num_layers=50, drop_ratio=0.6, mode='ir_se')
-        ir_model_path = "pretrained_models/model_ir_se50.pth"
+        ir_model_path = paths_config.ir_se50
         self.facenet.load_state_dict(torch.load(ir_model_path))
         self.face_pool = torch.nn.AdaptiveAvgPool2d((112, 112))
         self.facenet.eval()

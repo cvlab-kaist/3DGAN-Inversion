@@ -55,11 +55,9 @@ class RaySampler(torch.nn.Module):
         y_lift = (y_cam - cy.unsqueeze(-1)) / fy.unsqueeze(-1) * z_cam
 
         cam_rel_points = torch.stack((x_lift, y_lift, z_cam, torch.ones_like(z_cam)), dim=-1)
-        #import pdb; pdb.set_trace()
 
         world_rel_points = torch.bmm(cam2world_matrix, cam_rel_points.permute(0, 2, 1)).permute(0, 2, 1)[:, :, :3]
 
-        #import pdb; pdb.set_trace()
         ray_dirs = world_rel_points - cam_locs_world[:, None, :]
         ray_dirs = torch.nn.functional.normalize(ray_dirs, dim=2)
         
@@ -84,20 +82,12 @@ class RaySampler(torch.nn.Module):
         xyz = (3, res, res)
         '''
         res = depth.shape[-1]
-        #import pdb; pdb.set_trace()
         if ray_origin.shape[0]==1 and ray_origin.shape[1]==res**2:
             ray_origin = ray_origin.squeeze(0).reshape(res,res,3).permute(2,0,1)
         if ray_dirs.shape[0]==1 and ray_dirs.shape[1]==res**2:
             ray_dirs = ray_dirs.squeeze(0).reshape(res,res,3).permute(2,0,1)
-        # if ray_origin.shape[0]==ray_origin.shape[1]:
-        #     ray_origin = ray_origin.permute(2,0,1)
-        # if ray_origin.shape[0]==ray_origin.shape[1]:
-        #     ray_origin = ray_origin.permute(2,0,1)
         device = ray_origin.device
-        #import pdb; pdb.set_trace()
-        # xyz = ray_origin + ray_dirs * depth
-        xyz = ray_origin + ray_dirs * depth.squeeze(0) # ray_origin = 0이라 이렇게 해도 됨
+        xyz = ray_origin + ray_dirs * depth.squeeze(0)
         ones = torch.ones(1, xyz.shape[1], xyz.shape[2]).to(device)
-        #print(xyz.shape)
         xyz1 = torch.cat([xyz, ones], dim=0).reshape(4, res*res)
         return xyz1

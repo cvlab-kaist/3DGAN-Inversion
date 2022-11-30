@@ -48,10 +48,7 @@ def project_onto_planes(planes, coordinates):
     N, M, C = coordinates.shape
     n_planes, _, _ = planes.shape
     coordinates = coordinates.unsqueeze(1).expand(-1, n_planes, -1, -1).reshape(N*n_planes, M, 3)
-    try:
-        inv_planes = torch.linalg.inv(planes).unsqueeze(0).expand(N, -1, -1, -1).reshape(N*n_planes, 3, 3)
-    except:
-        inv_planes = torch.linalg.inv(planes).unsqueeze(0).expand(N, -1, -1, -1).reshape(N*n_planes, 3, 3)
+    inv_planes = torch.linalg.inv(planes).unsqueeze(0).expand(N, -1, -1, -1).reshape(N*n_planes, 3, 3)
     projections = torch.bmm(coordinates, inv_planes)
     return projections[..., :2]
 
@@ -64,7 +61,6 @@ def sample_from_planes(plane_axes, plane_features, coordinates, mode='bilinear',
     coordinates = (2/box_warp) * coordinates # TODO: add specific box bounds
 
     projected_coordinates = project_onto_planes(plane_axes, coordinates).unsqueeze(1)
-    #import pdb; pdb.set_trace()
     output_features = torch.nn.functional.grid_sample(plane_features, projected_coordinates.float(), mode=mode, padding_mode=padding_mode, align_corners=False).permute(0, 3, 2, 1).reshape(N, n_planes, M, C)
     #output_features = grid_sample(plane_features, projected_coordinates.float()).permute(0, 3, 2, 1).reshape(N, n_planes, M, C)
     return output_features
@@ -77,7 +73,6 @@ def sample_from_3dgrid(grid, coordinates):
     Returns sampled features of shape (batch_size, num_points_per_batch, feature_channels)
     """
     batch_size, n_coords, n_dims = coordinates.shape
-    #import pdb; pdb.set_trace()
     sampled_features = torch.nn.functional.grid_sample(grid.expand(batch_size, -1, -1, -1, -1),
                                                        coordinates.reshape(batch_size, 1, 1, -1, n_dims),
                                                        mode='bilinear', padding_mode='zeros', align_corners=False)

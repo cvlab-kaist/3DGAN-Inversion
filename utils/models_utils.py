@@ -19,7 +19,7 @@ def load_tuned_G(run_id, type):
 
 
 def load_old_G():
-    with open(paths_config.stylegan2_ada_ffhq, 'rb') as f:
+    with open(paths_config.eg3d, 'rb') as f:
         old_G = pickle.load(f)['G_ema'].to(global_config.device).eval()
         old_G = old_G.float()
     return old_G

@@ -7,36 +7,16 @@ import torch.nn.functional as F
 
 
 def photometric_reconstruction_loss(tgt_img, ref_img, depth_mask, explainability_mask=None):
-    #assert(explainability_mask is None or depth.size()[2:] == explainability_mask.size()[2:])
-    #assert(pose.size(1) == len(ref_imgs))
 
     reconstruction_loss = 0
-    #b, _, h, w = explainability_mask.shape()
-    #downscale = tgt_img.size(2)/h
-
-    #tgt_img_scaled = F.interpolate(tgt_img, (h, w), mode='area')
-    #ref_imgs_scaled = [F.interpolate(ref_img, (h, w), mode='area') for ref_img in ref_imgs]
-    #intrinsics_scaled = torch.cat((intrinsics[:, 0:2]/downscale, intrinsics[:, 2:]), dim=1)
-
-    #for i, ref_img in enumerate(ref_imgs):
-        #current_pose = pose[:, i]
-
-        #ref_img_warped, valid_points = inverse_warp(ref_img, depth[:,0], current_pose,
-        #                                            intrinsics_scaled,
-        #                                            rotation_mode, padding_mode)
     diff = (tgt_img - ref_img)
 
     #if explainability_mask is not None:
     diff = diff * depth_mask
 
     reconstruction_loss += diff.abs().mean()
-        #assert((reconstruction_loss == reconstruction_loss).item() == 1)
-
-        #warped_imgs.append(ref_img_warped[0])
-        #diff_maps.append(diff[0])
 
     return reconstruction_loss
-
 
 
 def explainability_loss(mask):
