@@ -79,7 +79,7 @@ You can edit the input & output directories, or GPU number on configs/paths_conf
 
 # Credits
 
-**StyleCLIP model and implementation:**   
+**EG3D model and implementation:**   
 https://github.com/NVlabs/eg3d
 Copyright (c) 2021-2022, NVIDIA Corporation & affiliates. 
 License (NVIDIA) https://github.com/NVlabs/eg3d/blob/main/LICENSE.txt
