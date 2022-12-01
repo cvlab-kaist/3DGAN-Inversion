@@ -1,20 +1,22 @@
 # 3D GAN Inversion with Pose Optimization
 <a href="https://arxiv.org/abs/2210.07301"><img src="https://img.shields.io/badge/arXiv-2210.07301-b31b1b.svg"></a>
 
-<!-- Inference Notebook: <a href="https://colab.research.google.com/drive/1HY8g_HR26YHsYmzrjC6K3gIaIK09bWD7?usp=sharing"><img src="https://colab.research.google.com/assets/colab-badge.svg" height=20></a>   -->
+
  <!-- ## [[Project Page]](https://3dgan-inversion.github.io./) -->
 ### Official PyTorch implementation of the WACV 2023 paper
+#### Jaehoon Ko*, Kyusun Cho*, Daewon Choi, Kwangrok Ryoo, Seungryong Kim,
+
+  **equal contribution*
+ 
+
+
+>With the recent advances in NeRF-based 3D aware GANs quality, projecting an image into the latent space of these 3D-aware GANs has a natural advantage over 2D GAN inversion: not only does it allow multi-view consistent editing of the projected image, but it also enables 3D reconstruction and novel view synthesis when given only a single image. However, the explicit viewpoint control acts as a main hindrance in the 3D GAN inversion process, as both camera pose and latent code have to be optimized simultaneously to reconstruct the given image. Most works that explore the latent space of the 3D-aware GANs rely on ground-truth camera viewpoint or deformable 3D model, thus limiting their applicability. In this work, we introduce a generalizable 3D GAN inversion method that infers camera viewpoint and latent code simultaneously to enable multi-view consistent semantic image editing. The key to our approach is to leverage pre-trained estimators for better initialization and utilize the pixel-wise depth calculated from NeRF parameters to better reconstruct the given image. We conduct extensive experiments on image reconstruction and editing both quantitatively and qualitatively, and further compare our results with 2D GAN-based editing to demonstrate the advantages of utilizing the latent space of 3D GANs.
 
 ![1](https://user-images.githubusercontent.com/78152231/204740257-1996faa1-11ff-4710-8224-1cf340be7d29.png)
 ![2](https://user-images.githubusercontent.com/78152231/204739677-2580175e-37ee-403e-8159-8a37b71f0207.png)
 ![3](https://user-images.githubusercontent.com/78152231/204739594-110e6928-3ebe-4663-800d-4b37dbfdae88.png)
 ![0](https://user-images.githubusercontent.com/78152231/204739664-4df84a8a-28b5-4a36-8705-93e057e576c4.png)
 
-
-#### Jaehoon Ko*, Kyusun Cho*, Daewon Choi, Kwangrok Ryoo, Seungryong Kim,
-
-  **equal contribution*
- 
 For more information, check out the paper on [Arxiv](https://arxiv.org/abs/2210.07301) or [Project page](https://3dgan-inversion.github.io/)
 
 
@@ -57,12 +59,14 @@ Put weight of initializers and generators as followings:
         
             └── ffhqrebalanced512-128.pkl
         
-# Image Preprocessing
-Follow the preprocessing code from EG3D repository. 
+# Image Alignment
+We refer the users to the [preprocessing code from the EG3D representation](https://github.com/NVlabs/eg3d/blob/main/dataset_preprocessing/ffhq/crop_images_in_the_wild.py)
 
-(Link: https://github.com/NVlabs/eg3d/blob/main/dataset_preprocessing/ffhq/crop_images_in_the_wild.py)
+We also provide an easy-to-use image alignment notebook at  <a href="https://colab.research.google.com/drive/1HY8g_HR26YHsYmzrjC6K3gIaIK09bWD7?usp=sharing"><img src="https://colab.research.google.com/assets/colab-badge.svg" height=20></a>  
 
-For cat face datasets, we just manually cropped the facial areas.
+
+
+In addition, we manually cropped the facial areas for inverting images of cats. 
 
 # Inversion
 Run inversion process
