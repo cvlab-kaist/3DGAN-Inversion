@@ -7,7 +7,7 @@ initializer = './initializer'
 checkpoints_dir = ''
 
 ## Dirs for output files
-embedding_dir = './results'
+embedding_dir = 'pivots'
 output_data_path = './results'
 
 ## Input info
