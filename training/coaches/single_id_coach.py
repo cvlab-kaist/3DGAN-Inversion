@@ -35,7 +35,7 @@ class SingleIDCoach(BaseCoach):
 
             if self.image_counter >= hyperparameters.max_images_to_invert:
                 break
-            ckpt_dir = os.path.join(paths_config.embedding_dir, folder_dir[2:])
+            ckpt_dir = os.path.join(folder_dir[2:], paths_config.embedding_dir)
 
             if os.path.isdir(folder_dir) == 0:
                 os.makedirs(folder_dir)
