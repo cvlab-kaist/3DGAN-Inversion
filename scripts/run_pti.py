@@ -4,7 +4,7 @@ from torch.utils.data import DataLoader
 from torchvision.transforms import transforms
 import os
 import sys
-sys.path.append('/home/cvlab02/project/jaehoon/PTI_repo/Final')
+sys.path.append('./')
 from configs import global_config, paths_config
 
 from training.coaches.single_id_coach import SingleIDCoach
