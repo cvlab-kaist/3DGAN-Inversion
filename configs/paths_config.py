@@ -7,8 +7,8 @@ initializer = './initializer'
 checkpoints_dir = ''
 
 ## Dirs for output files
-embedding_dir = '/media/data1/rebuttal_onlywarp_1_4'
-output_data_path = './results2'
+embedding_dir = './results'
+output_data_path = './results'
 
 ## Input info
 ### Input dir, where the images reside
