@@ -38,9 +38,11 @@ class SingleIDCoach(BaseCoach):
             ckpt_dir = os.path.join(paths_config.embedding_dir, folder_dir[2:])
 
             if os.path.isdir(folder_dir) == 0:
-                os.mkdir(folder_dir)
+                os.makedirs(folder_dir)
             if os.path.isdir(folder_dir + '_pivot') == 0:
-                os.mkdir(folder_dir + '_pivot')
+                os.makedirs(folder_dir + '_pivot')
+            if os.path.isdir(ckpt_dir) == 0:
+                os.makedirs(ckpt_dir)
 
             if hyperparameters.use_last_w_pivots:
                 w_pivot, freezed_cam = self.load_inversions(ckpt_dir, image_name)
@@ -109,9 +111,10 @@ class SingleIDCoach(BaseCoach):
                     #save pivots
                     if global_config.save_pivot:
                         cam_np = freezed_cam.clone().detach().cpu().numpy()
-                        w_np = torch.from_numpy(w_pivot.clone().detach().cpu())
+                        w_np = w_pivot.clone().detach().cpu().numpy()
                         np.save(os.path.join(ckpt_dir, f'{image_name}_cam.npy'), cam_np)
                         np.save(os.path.join(ckpt_dir, f'{image_name}_ws.npy'), w_np)
+                        #torch.save(self.G, os.path.join(ckpt_dir, f'{image_name}.pkl'))
 
 
 def create_geometry(G, ws, outdir, fname, shape_res = 512, shape_format = '.mrc'):
