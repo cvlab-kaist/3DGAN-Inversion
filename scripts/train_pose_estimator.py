@@ -5,7 +5,8 @@ from torch.utils.data import Dataset, DataLoader
 import numpy as np
 import os
 import sys
-sys.path.append('/home/cvlab02/project/jaehoon/PTI_repo/Final')
+sys.path.append('./')
+
 from glob import glob
 from torchvision import transforms
 import argparse
