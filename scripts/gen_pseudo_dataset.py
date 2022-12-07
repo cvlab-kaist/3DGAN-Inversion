@@ -14,7 +14,7 @@ import os
 import re
 from typing import List, Optional, Tuple, Union
 import sys
-sys.path.append('/home/cvlab02/project/jaehoon/PTI_repo/Final')
+sys.path.append('./')
 
 import click
 import dnnlib
