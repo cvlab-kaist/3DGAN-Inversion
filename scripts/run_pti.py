@@ -38,7 +38,7 @@ def run_PTI(run_name='', use_wandb=False, use_multi_id_training=False):
         weight_dir = os.path.join(paths_config.initializer, 'pose_estimator_quat.pt')
     elif global_config.use_6d: # for afhq
         P = resnet34(6)
-        weight_dir = os.path.join(paths_config.initializer, 'pose_estimator_6d.pt')
+        weight_dir = os.path.join(paths_config.initializer, 'pose_estimator_afhq.pt')
         e4e_weight_dir = os.path.join(paths_config.initializer, 'e4e_afhq.pt')
     else:
         P = resnet34(2)
