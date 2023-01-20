@@ -34,7 +34,7 @@ conda activate 3dganinv
 ```
 
 # Pre-trained Networks
-Download pre-trained weights on this google drive [Links](https://drive.google.com/drive/folders/1t7uD8ng-r2-3xaTpfY12Y7_ah-gLHz0c?usp=sharing)
+Download pre-trained weights on this google drive [Links](https://drive.google.com/drive/folders/1HRSRRZLhWfQI3eBP3Fen-TcHeocj2GkE?usp=sharing)
 
 Put weight of initializers and generators as followings:
 
