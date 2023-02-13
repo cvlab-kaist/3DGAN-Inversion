@@ -114,7 +114,7 @@ class SingleIDCoach(BaseCoach):
                         w_np = w_pivot.clone().detach().cpu().numpy()
                         np.save(os.path.join(ckpt_dir, f'{image_name}_cam.npy'), cam_np)
                         np.save(os.path.join(ckpt_dir, f'{image_name}_ws.npy'), w_np)
-                        #torch.save(self.G, os.path.join(ckpt_dir, f'{image_name}.pkl'))
+                        #torch.save(self.G.state_dict(), os.path.join(ckpt_dir, f'{image_name}.pt'))
 
 
 def create_geometry(G, ws, outdir, fname, shape_res = 512, shape_format = '.mrc'):
